@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pro.sky.telegrambot.service.CommandService;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -17,32 +18,35 @@ import java.util.List;
 @Service
 public class TelegramBotUpdatesListener implements UpdatesListener {
 
+
     private Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
 
     @Autowired
     private TelegramBot telegramBot;
+
+    public Logger getLogger() {
+        return logger;
+    }
+
+    public TelegramBot getTelegramBot() {
+        return telegramBot;
+    }
 
     @PostConstruct
     public void init() {
         telegramBot.setUpdatesListener(this);
     }
 
+    //Inject CommandService for division commands
+    @Autowired
+    private CommandService commandService;
+
     @Override
     public int process(List<Update> updates) {
         updates.forEach(update -> {
             logger.info("Processing update: {}", update);
             if (update.message() != null && update.message().text() != null) {
-                Long chatID = update.message().chat().id();
-                String text = update.message().text();
-                StringBuilder answer = new StringBuilder();
-
-                if (text.equals("/start")) {
-                    answer.append("Hello");
-                } else {
-                    answer.append("Unsupported command");
-                }
-                SendMessage sendMessage = new SendMessage(chatID, answer.toString());
-                telegramBot.execute(sendMessage);
+                commandService.handleCommand(update);
             } else {
                 logger.warn("Received update without text message: {}", update);
             }
@@ -50,3 +54,4 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
 }
+
