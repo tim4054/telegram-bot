@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import pro.sky.telegrambot.configuration.UserState;
+import pro.sky.telegrambot.configuration.UserStateStorage;
 import pro.sky.telegrambot.interfaces.CommandHandler;
 
 
@@ -25,6 +27,7 @@ public class CommandStart implements CommandHandler {
 
         telegramBot.execute(sendMessage);
         logger.info("Sent message: {}", text);
+        UserStateStorage.setState(chatID, UserState.DEFAULT);
     }
 
     @Override

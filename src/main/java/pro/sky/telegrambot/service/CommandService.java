@@ -7,7 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pro.sky.telegrambot.commands.CommandNotify;
 import pro.sky.telegrambot.commands.CommandStart;
+import pro.sky.telegrambot.configuration.UserState;
+import pro.sky.telegrambot.configuration.UserStateStorage;
 import pro.sky.telegrambot.interfaces.CommandHandler;
 
 import java.util.HashMap;
@@ -41,5 +44,9 @@ public class CommandService {
             telegramBot.execute(sendMessage);
             logger.info("Unsupported command: {}", command);
         }
+    }
+
+    public Map<String, CommandHandler> getCommandHandlers() {
+        return commandHandlers;
     }
 }
