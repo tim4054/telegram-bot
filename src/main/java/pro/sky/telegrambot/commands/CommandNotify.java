@@ -13,6 +13,8 @@ import pro.sky.telegrambot.interfaces.CommandHandler;
 import pro.sky.telegrambot.model.NotificationTask;
 import pro.sky.telegrambot.repository.NotificationTaskRepository;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,27 +54,27 @@ public class CommandNotify implements CommandHandler {
         if (currentState == UserState.WAITING_FOR_NOTIFICATION) {
             logger.info("Entered WAITING_FOR_NOTIFICATION state for chatID: {}", chatID);
 
-            String item = "";
-            String date = "";
-            String status = "no";
-
-            String text = "Напоминание добавлено: ";
             Pattern pattern = Pattern.compile("(\\d{2}\\.\\d{2}\\.\\d{4}\\s\\d{2}:\\d{2})(\\s+)(.+)");
             Matcher matcher = pattern.matcher(messageText);
 
             if (matcher.matches()) {
                 logger.info("Pattern matched for message: {}", messageText);
-                date = matcher.group(1);
-                item = matcher.group(3);
-                text = text + " " + item + " " + date;
 
-                NotificationTask task = new NotificationTask(chatID, item, date, status);
-                repository.save(task);
-                logger.info("Notification task saved for chatID: {}, item: {}, date: {}", chatID, item, date);
+                String dateTimeString = matcher.group(1);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+                LocalDateTime date = LocalDateTime.parse(dateTimeString, formatter);
 
-                SendMessage sendMessage = new SendMessage(chatID, text);
+                repository.save(new NotificationTask(
+                        chatID,
+                        matcher.group(3),
+                        date,
+                        "no")
+                );
+                logger.info("Notification task saved for chatID: {}, notification: {}, date: {}", chatID, matcher.group(3), date);
+
+                SendMessage sendMessage = new SendMessage(chatID, String.format("Напоминание добавлено: %s, %s", date, matcher.group(3)));
                 telegramBot.execute(sendMessage);
-                logger.info("Sent message: {}", text);
+                logger.info("Sent message: {}", String.format("Напоминание добавлено: %s, %s", date, matcher.group(3)));
 
                 // Возвращаем пользователя в состояние по умолчанию
                 UserStateStorage.setState(chatID, UserState.DEFAULT);
@@ -89,25 +91,6 @@ public class CommandNotify implements CommandHandler {
     @Override
     public String getCommand() {
         return "/notify";
-    }
-
-    private void handleStartCommand(Update update) {
-        // Обработка команды /start для выхода в главное меню
-        String messageText = update.message().text();
-        if (messageText.equals("/start")) {
-            handleStartCommand(update);
-        }
-
-        Long chatID = update.message().chat().id();
-        logger.info("Command /start received for chatID: {}", chatID);
-        SendMessage sendMessage = new SendMessage(chatID, "Вы вернулись в главное меню.");
-        telegramBot.execute(sendMessage);
-        logger.info("Sent message: Вы вернулись в главное меню.");
-
-        // Возвращаем пользователя в состояние по умолчанию
-        UserStateStorage.setState(chatID, UserState.DEFAULT);
-        logger.info("User state set to DEFAULT for chatID: {}", chatID);
-
     }
 }
 

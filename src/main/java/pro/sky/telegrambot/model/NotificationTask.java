@@ -1,27 +1,32 @@
 package pro.sky.telegrambot.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+
+
+
+
+import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 public class NotificationTask {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long chat_id;
+    private Long chatId;
     private String notification;
-    private String dateTime;
+    private LocalDateTime dateTime;
     private String status;
 
 
-    public NotificationTask(Long chat_id, String notification, String dateTime, String status) {
-        this.chat_id = chat_id;
+    public NotificationTask(Long chatId, String notification, LocalDateTime dateTime, String status) {
+        this.chatId = chatId;
         this.notification = notification;
         this.dateTime = dateTime;
         this.status = status;
+    }
+
+    public NotificationTask() {
     }
 
     public Long getId() {
@@ -32,12 +37,12 @@ public class NotificationTask {
         this.id = id;
     }
 
-    public Long getChat_id() {
-        return chat_id;
+    public Long getChatId() {
+        return chatId;
     }
 
-    public void setChat_id(Long chat_id) {
-        this.chat_id = chat_id;
+    public void setChatId(Long chatId) {
+        this.chatId = chatId;
     }
 
     public String getNotification() {
@@ -48,11 +53,11 @@ public class NotificationTask {
         this.notification = notification;
     }
 
-    public String getDateTime() {
+    public LocalDateTime getDateTime() {
         return dateTime;
     }
 
-    public void setDateTime(String dateTime) {
+    public void setDateTime(LocalDateTime dateTime) {
         this.dateTime = dateTime;
     }
 
@@ -62,5 +67,29 @@ public class NotificationTask {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NotificationTask task = (NotificationTask) o;
+        return Objects.equals(id, task.id) && Objects.equals(chatId, task.chatId) && Objects.equals(notification, task.notification) && Objects.equals(dateTime, task.dateTime) && Objects.equals(status, task.status);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, chatId, notification, dateTime, status);
+    }
+
+    @Override
+    public String toString() {
+        return "NotificationTask{" +
+                "id=" + id +
+                ", chatId=" + chatId +
+                ", notification='" + notification + '\'' +
+                ", dateTime=" + dateTime +
+                ", status='" + status + '\'' +
+                '}';
     }
 }

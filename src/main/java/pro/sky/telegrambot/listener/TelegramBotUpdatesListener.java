@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pro.sky.telegrambot.commands.CommandNotify;
+import pro.sky.telegrambot.commands.CommandStart;
 import pro.sky.telegrambot.configuration.UserState;
 import pro.sky.telegrambot.configuration.UserStateStorage;
 import pro.sky.telegrambot.service.CommandService;
@@ -30,6 +31,9 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     @Autowired
     private CommandNotify commandNotify;
 
+    @Autowired
+    private CommandStart commandStart;
+
     @PostConstruct
     public void init() {
         telegramBot.setUpdatesListener(this);
@@ -42,12 +46,15 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             UserState currentState = UserStateStorage.getState(chatID);
             logger.info("Processing update: {}", update);
 
-            if (update.message() != null && update.message().text() != null) {
+            if (update.message() != null && update.message().text() != null
+                    && !update.message().text().equals("/start")) {
                 if (currentState == UserState.WAITING_FOR_NOTIFICATION) {
                     commandNotify.handle(update);
                 } else {
                     commandService.handleCommand(update);
                 }
+            } else if (update.message().text().equals("/start")) {
+                commandStart.handle(update);
             } else {
                 logger.warn("Received update without text message: {}", update);
             }

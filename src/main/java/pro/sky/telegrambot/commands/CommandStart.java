@@ -24,7 +24,8 @@ public class CommandStart implements CommandHandler {
         Long chatID = update.message().chat().id();
 
         String username = update.message().chat().firstName();
-        String text = "Hello " + username + "\n Список доступных команд: ...";
+        String text = username + ", добро пожаловать в Главное меню!\nСписок доступных команд:\n/notify - добавить напоминание" +
+                "\n/start - выход в Главное меню";
         SendMessage sendMessage = new SendMessage(chatID, text);
 
         telegramBot.execute(sendMessage);
