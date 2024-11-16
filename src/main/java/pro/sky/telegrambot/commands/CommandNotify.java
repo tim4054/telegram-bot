@@ -93,7 +93,7 @@ public class CommandNotify implements CommandHandler {
 
     private void handleStartCommand(Update update) {
         // Обработка команды /start для выхода в главное меню
-        String messageText = update.message().
+        String messageText = update.message().text();
         if (messageText.equals("/start")) {
             handleStartCommand(update);
         }

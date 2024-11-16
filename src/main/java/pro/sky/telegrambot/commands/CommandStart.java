@@ -22,12 +22,16 @@ public class CommandStart implements CommandHandler {
     @Override
     public void handle(Update update) {
         Long chatID = update.message().chat().id();
-        String text = "Hello";
+
+        String username = update.message().chat().firstName();
+        String text = "Hello " + username + "\n Список доступных команд: ...";
         SendMessage sendMessage = new SendMessage(chatID, text);
 
         telegramBot.execute(sendMessage);
         logger.info("Sent message: {}", text);
+        // Возвращаем пользователя в состояние по умолчанию
         UserStateStorage.setState(chatID, UserState.DEFAULT);
+        logger.info("User state set to DEFAULT for chatID: {}", chatID);
     }
 
     @Override
