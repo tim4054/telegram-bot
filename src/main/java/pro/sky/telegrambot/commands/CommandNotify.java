@@ -72,7 +72,7 @@ public class CommandNotify implements CommandHandler {
                 );
                 logger.info("Notification task saved for chatID: {}, notification: {}, date: {}", chatID, matcher.group(3), date);
 
-                SendMessage sendMessage = new SendMessage(chatID, String.format("Напоминание добавлено: %s, %s", date, matcher.group(3)));
+                SendMessage sendMessage = new SendMessage(chatID, String.format("Напоминание добавлено: %s %s", dateTimeString, matcher.group(3)));
                 telegramBot.execute(sendMessage);
                 logger.info("Sent message: {}", String.format("Напоминание добавлено: %s, %s", date, matcher.group(3)));
 

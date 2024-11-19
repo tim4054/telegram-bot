@@ -31,6 +31,8 @@ public class NotificationTaskScheduler {
             Long chatId = task.getChatId();
             SendMessage message = new SendMessage(chatId, task.getNotification());
             telegramBot.execute(message);
+            task.setStatus("sent");
+            repository.save(task);
         }
     }
 }
