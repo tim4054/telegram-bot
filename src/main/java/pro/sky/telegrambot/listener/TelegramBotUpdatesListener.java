@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pro.sky.telegrambot.commands.CommandNotify;
+import pro.sky.telegrambot.commands.CommandNotifyAI;
 import pro.sky.telegrambot.commands.CommandStart;
 import pro.sky.telegrambot.configuration.UserState;
 import pro.sky.telegrambot.configuration.UserStateStorage;
@@ -30,6 +31,8 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 
     @Autowired
     private CommandNotify commandNotify;
+    @Autowired
+    private CommandNotifyAI commandNotifyAI;
 
     @Autowired
     private CommandStart commandStart;
@@ -50,6 +53,8 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                     && !update.message().text().equals("/start")) {
                 if (currentState == UserState.WAITING_FOR_NOTIFICATION) {
                     commandNotify.handle(update);
+                } else if (currentState == UserState.WAITING_FOR_NOTIFICATIONAI) {
+                    commandNotifyAI.handle(update);
                 } else {
                     commandService.handleCommand(update);
                 }
